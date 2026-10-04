@@ -71,6 +71,8 @@ a:hover { color: var(--primary-dark); }
   cursor: pointer;
   position: relative;
   border-radius: 8px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
 }
 .nav-burger span,
 .nav-burger span::before,
@@ -79,7 +81,7 @@ a:hover { color: var(--primary-dark); }
   position: absolute;
   width: 22px;
   height: 2px;
-  background: var(--text);
+  background: var(--primary-dark);
   border-radius: 2px;
   transition: 0.25s;
 }
