@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>进销存 PWA 离线应用实践 - jxc-w.com</title>
+<meta name="description" content="用 Service Worker 预缓存应用外壳、IndexedDB 存储离线单据队列，实现进销存 Web 应用断网开单、联网自动同步的完整 PWA 方案。">
+<link rel="canonical" href="https://jxc-w.com/articles/pwa-offline.html">
+<meta property="og:title" content="进销存 PWA 离线应用实践 - jxc-w.com">
+<meta property="og:description" content="用 Service Worker 预缓存应用外壳、IndexedDB 存储离线单据队列，实现进销存 Web 应用断网开单、联网自动同步的完整 PWA 方案。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jxc-w.com/articles/pwa-offline.html">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "进销存 PWA 离线应用实践",
+  "description": "用 Service Worker 预缓存应用外壳、IndexedDB 存储离线单据队列，实现进销存 Web 应用断网开单、联网自动同步的完整 PWA 方案。",
+  "datePublished": "2026-10-04",
+  "dateModified": "2026-10-04",
+  "author": { "@type": "Organization", "name": "jxc-w.com" },
+  "mainEntityOfPage": "https://jxc-w.com/articles/pwa-offline.html",
+  "inLanguage": "zh-CN"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://jxc-w.com/" },
+    { "@type": "ListItem", "position": 2, "name": "PWA 与移动 Web", "item": "https://jxc-w.com/articles/pwa/" },
+    { "@type": "ListItem", "position": 3, "name": "进销存 PWA 离线应用实践", "item": "https://jxc-w.com/articles/pwa-offline.html" }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="/">JXC-W<span>.com</span></a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-burger" aria-label="打开菜单"><span></span></label>
+    <nav class="site-nav">
+      <a href="/">首页</a>
+      <a href="/articles/">全部文章</a>
+      <a href="/articles/web-ui/">Web界面</a>
+      <a href="/articles/pwa/">PWA应用</a>
+      <a href="/articles/api/">接口设计</a>
+      <a href="/articles/deploy/">部署运维</a>
+      <a href="/articles/data/">数据报表</a>
+      <a href="/articles/tech/">技术架构</a>
+      <a href="/about.html">关于</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="breadcrumb" aria-label="面包屑">
+  <ol>
+    <li><a href="/">首页</a></li>
+    <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+    <li>进销存 PWA 离线应用实践</li>
+  </ol>
+</nav>
+</div>
+
+<div class="wrap layout">
+<aside class="sidebar">
+  <h3>栏目</h3>
+  <ul>
+    <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+    <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+    <li><a href="/articles/api/">前后端接口</a></li>
+    <li><a href="/articles/deploy/">部署与运维</a></li>
+    <li><a href="/articles/data/">报表与数据可视化</a></li>
+    <li><a href="/articles/tech/">技术架构</a></li>
+    <li><a href="/articles/">全部文章</a></li>
+  </ul>
+  <h3>热门文章</h3>
+  <ul>
+    <li><a href="/articles/web-form-print.html">Web 端进销存表单设计与打印方案</a></li>
+    <li><a href="/articles/api-design.html">进销存 Web 版 REST API 设计</a></li>
+    <li><a href="/articles/docker-deploy.html">进销存系统 Docker 部署指南</a></li>
+  </ul>
+  <h3>关于本站</h3>
+  <ul>
+    <li><a href="/about.html">站点介绍</a></li>
+  </ul>
+</aside>
+
+<main class="content">
+  <article class="article">
+    <h1>进销存 PWA 离线应用实践</h1>
+    <p class="article-meta">发布时间：2026-10-04 | 分类：PWA 与移动 Web</p>
+
+    <p>仓库里网络信号差、客户现场没有 Wi-Fi，是进销存移动使用的真实场景。如果断网就开不了单，Web 版进销存就很难取代本地软件。PWA（Progressive Web App）让网页应用具备离线能力：断网时正常开单，联网后自动同步。本文介绍我们为进销存 Web 版实现离线能力的完整方案。</p>
+
+    <h2>一、整体架构：外壳缓存 + 数据队列</h2>
+    <p>离线能力分两层解决：</p>
+    <ul>
+      <li><strong>应用外壳（App Shell）离线</strong>：HTML、CSS、JS、字体等静态资源通过 Service Worker 预缓存，断网时应用照常打开。</li>
+      <li><strong>业务数据离线</strong>：商品档案、客户档案等基础数据同步到 IndexedDB，开单时本地查询；新开的单据写入本地待同步队列，联网后批量提交。</li>
+    </ul>
+    <p>注意 Service Worker 只能可靠拦截它注册路径下的请求，缓存配额在不同浏览器差异较大（移动端 Safari 尤其紧张），所以离线设计的第一原则是：<strong>基础数据要精简</strong>。商品档案只同步编码、名称、规格、单位、默认价格几个字段，图片不预同步，用占位图按需加载。</p>
+
+    <h2>二、Service Worker：预缓存与运行时缓存</h2>
+    <p>静态资源采用"构建时预缓存 + 运行时缓存"双策略。构建工具（Vite 的 workbox 插件或自写脚本）在打包时生成资源清单，Service Worker 安装阶段全部预缓存；运行时对 API 响应按类别设置不同策略：</p>
+    <table>
+      <tr>
+        <th>数据类型</th>
+        <th>缓存策略</th>
+        <th>说明</th>
+      </tr>
+      <tr>
+        <td>商品/客户档案</td>
+        <td>Stale-While-Revalidate</td>
+        <td>先返回缓存立即渲染，后台更新缓存，下次生效</td>
+      </tr>
+      <tr>
+        <td>单据提交</td>
+        <td>Network Only + 失败入队</td>
+        <td>必须发出去，失败转本地队列</td>
+      </tr>
+      <tr>
+        <td>库存查询</td>
+        <td>Network First</td>
+        <td>库存必须尽量准，断网才用缓存并标注时间</td>
+      </tr>
+    </table>
+    <p>版本更新用"先清后装"：新 Service Worker 激活前删除旧版本所有缓存，避免新旧资源混杂。提示用户刷新可以用简单的 <code>postMessage</code> 通知页面弹出"新版本可用"条。</p>
+
+    <h2>三、IndexedDB：离线单据队列</h2>
+    <p>离线开的单据不能丢，也不能乱序。我们在 IndexedDB 里建两个对象仓库：</p>
+    <ol>
+      <li><strong>pending_docs</strong>：待同步单据队列，按创建时间排序，每行存完整单据快照 + 本地 UUID + 状态（待同步 / 同步中 / 失败）。</li>
+      <li><strong>base_data</strong>：基础档案缓存，按类型分索引（商品、客户、仓库）。</li>
+    </ol>
+    <p>同步流程：监听 <code>online</code> 事件和服务端可达探测（发一个轻量 ping 接口，因为 <code>online</code> 事件在有局域网但没外网时不准），网络恢复后按队列顺序逐张提交。每张单据带本地 UUID，服务端按 UUID 幂等去重——这是防止"重试导致重复单据"的关键，重复提交网络环境下必须做。</p>
+
+    <h2>四、冲突处理：先到先得 + 人工干预</h2>
+    <p>离线期间两个人改了同一张单、或者离线开的单与线上库存冲突，是同步绕不开的问题。我们的原则：</p>
+    <ul>
+      <li><strong>新单据</strong>（离线开的销售单）：不冲突，直接入库，但同步后要校验库存是否充足，不足则标记"缺货待审"而不是自动退单。</li>
+      <li><strong>改单据</strong>：离线状态下只允许新建不允许编辑已有单据，从流程上消灭大半冲突。</li>
+      <li><strong>库存不足</strong>：同步后进入异常清单，通知开单人人工处理。</li>
+    </ul>
+
+    <h2>五、安装与体验</h2>
+    <p>达到可安装标准需要三件套：HTTPS、有效的 Web App Manifest、注册的 Service Worker。Manifest 里配置 <code>display: standalone</code>、主题色、图标（192/512 两档 PNG 加 maskable 版本），用户在手机浏览器菜单里就能"添加到主屏幕"，图标和原生应用无异。</p>
+    <p>最后加一个离线状态指示条：全局监听网络状态，离线时在页面顶部显示"离线模式，单据将在联网后同步"的黄色提示条，让用户对数据去向有确定感。这个小小的提示能大幅降低断网时用户的焦虑和对系统的不信任。</p>
+
+    <h2>结语</h2>
+    <p>PWA 让 Web 版进销存第一次具备了和本地软件同等的现场可用性。实现要点就三条：外壳预缓存保打开、IndexedDB 队列保单据不丢、UUID 幂等保同步不重。配合 <a href="/articles/web-form-print.html">表单设计的键盘流</a>，仓库里一部手机就能完成开单全流程。</p>
+
+    <nav class="article-nav">
+      <a href="/articles/web-form-print.html">← 上一篇：Web 端进销存表单设计与打印方案</a>
+      <a href="/articles/api-design.html">下一篇：进销存 Web 版 REST API 设计 →</a>
+    </nav>
+  </article>
+</main>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>JXC-W.com</h4>
+        <p>进销存 Web 版技术站：Web 界面、PWA、接口、部署、报表与架构的技术积累。</p>
+        <p>联系邮箱：<a href="mailto:webnic@qq.com">webnic@qq.com</a></p>
+      </div>
+      <div>
+        <h4>栏目导航</h4>
+        <ul>
+          <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+          <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+          <li><a href="/articles/api/">前后端接口</a></li>
+          <li><a href="/articles/deploy/">部署与运维</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>相关站点</h4>
+        <ul>
+          <li><a href="https://jxc.js.cn" rel="noopener">jxc.js.cn · 进销存技术</a></li>
+          <li><a href="https://psi.js.cn" rel="noopener">psi.js.cn · PSI 进销存</a></li>
+          <li><a href="https://ims.js.cn" rel="noopener">ims.js.cn · 信息管理</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© 2026 jxc-w.com · 进销存 Web 版技术站</p>
+  </div>
+</footer>
+
+</body>
+</html>

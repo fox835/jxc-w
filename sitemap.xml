@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://jxc-w.com/</loc><lastmod>2026-10-04</lastmod><priority>1.0</priority></url>
+  <url><loc>https://jxc-w.com/articles/</loc><lastmod>2026-10-04</lastmod><priority>0.8</priority></url>
+  <url><loc>https://jxc-w.com/articles/web-ui/</loc><lastmod>2026-10-04</lastmod><priority>0.6</priority></url>
+  <url><loc>https://jxc-w.com/articles/pwa/</loc><lastmod>2026-10-04</lastmod><priority>0.6</priority></url>
+  <url><loc>https://jxc-w.com/articles/api/</loc><lastmod>2026-10-04</lastmod><priority>0.6</priority></url>
+  <url><loc>https://jxc-w.com/articles/deploy/</loc><lastmod>2026-10-04</lastmod><priority>0.6</priority></url>
+  <url><loc>https://jxc-w.com/articles/data/</loc><lastmod>2026-10-04</lastmod><priority>0.6</priority></url>
+  <url><loc>https://jxc-w.com/articles/tech/</loc><lastmod>2026-10-04</lastmod><priority>0.6</priority></url>
+  <url><loc>https://jxc-w.com/articles/web-form-print.html</loc><lastmod>2026-10-04</lastmod><priority>0.7</priority></url>
+  <url><loc>https://jxc-w.com/articles/pwa-offline.html</loc><lastmod>2026-10-04</lastmod><priority>0.7</priority></url>
+  <url><loc>https://jxc-w.com/articles/api-design.html</loc><lastmod>2026-10-04</lastmod><priority>0.7</priority></url>
+  <url><loc>https://jxc-w.com/articles/docker-deploy.html</loc><lastmod>2026-10-04</lastmod><priority>0.7</priority></url>
+  <url><loc>https://jxc-w.com/articles/report-echarts.html</loc><lastmod>2026-10-04</lastmod><priority>0.7</priority></url>
+  <url><loc>https://jxc-w.com/articles/tech-stack.html</loc><lastmod>2026-10-04</lastmod><priority>0.7</priority></url>
+  <url><loc>https://jxc-w.com/about.html</loc><lastmod>2026-10-04</lastmod><priority>0.4</priority></url>
+</urlset>

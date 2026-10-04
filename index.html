@@ -1,48 +1,187 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>jxc-w.com</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-    }
-    .card {
-      text-align: center;
-      padding: 48px 64px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 12px;
-      letter-spacing: 2px;
-    }
-    p {
-      font-size: 1rem;
-      opacity: 0.85;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>进销存Web版技术站 - jxc-w.com</title>
+<meta name="description" content="进销存 Web 版技术站：Web 界面、PWA 离线应用、前后端接口、Docker 部署、报表可视化与技术架构选型的实战经验分享。">
+<link rel="canonical" href="https://jxc-w.com/">
+<meta property="og:title" content="进销存Web版技术站 - jxc-w.com">
+<meta property="og:description" content="进销存 Web 版技术站：Web 界面、PWA 离线应用、前后端接口、Docker 部署、报表可视化与技术架构选型的实战经验分享。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jxc-w.com/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "进销存Web版技术站",
+  "url": "https://jxc-w.com/",
+  "description": "进销存 Web 版技术站：Web 界面、PWA 离线应用、前后端接口、Docker 部署、报表可视化与技术架构选型的实战经验分享。",
+  "inLanguage": "zh-CN"
+}
+</script>
 </head>
 <body>
-  <div class="card">
-    <h1>jxc-w.com</h1>
-    <p>网站建设中，敬请期待……</p>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="/">JXC-W<span>.com</span></a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-burger" aria-label="打开菜单"><span></span></label>
+    <nav class="site-nav">
+      <a href="/">首页</a>
+      <a href="/articles/">全部文章</a>
+      <a href="/articles/web-ui/">Web界面</a>
+      <a href="/articles/pwa/">PWA应用</a>
+      <a href="/articles/api/">接口设计</a>
+      <a href="/articles/deploy/">部署运维</a>
+      <a href="/articles/data/">数据报表</a>
+      <a href="/articles/tech/">技术架构</a>
+      <a href="/about.html">关于</a>
+    </nav>
   </div>
+</header>
+
+<!-- hero -->
+<section class="hero">
+  <div class="wrap">
+    <h1>进销存 Web 版技术站</h1>
+    <p>专注进销存系统的 Web 端实现：从界面交互、PWA 离线应用、接口设计到 Docker 部署与报表可视化，沉淀一套可直接落地的 Web 版进销存技术方案。</p>
+    <a class="btn" href="/articles/">浏览全部文章</a>
+    <a class="btn btn-ghost" href="/articles/tech/">技术架构专题</a>
+  </div>
+</section>
+
+<!-- 栏目导航 -->
+<section class="block">
+  <div class="wrap">
+    <h2 class="block-title">内容栏目<small>按主题查找你需要的内容</small></h2>
+    <div class="grid">
+      <a class="card" href="/articles/web-ui/">
+        <h3>Web 界面与交互</h3>
+        <p>表单设计、复杂表格、打印套打与键盘流操作，让浏览器里的进销存好用。</p>
+        <span class="meta">1 篇文章</span>
+      </a>
+      <a class="card" href="/articles/pwa/">
+        <h3>PWA 与移动 Web</h3>
+        <p>Service Worker 离线缓存、安装到桌面、扫码与推送，把网页变成 App。</p>
+        <span class="meta">1 篇文章</span>
+      </a>
+      <a class="card" href="/articles/api/">
+        <h3>前后端接口</h3>
+        <p>REST 设计、鉴权、版本管理与 OpenAPI 文档，进销存接口的规范实践。</p>
+        <span class="meta">1 篇文章</span>
+      </a>
+      <a class="card" href="/articles/deploy/">
+        <h3>部署与运维</h3>
+        <p>nginx、Docker、HTTPS 与备份策略，一套稳定的进销存 Web 部署方案。</p>
+        <span class="meta">1 篇文章</span>
+      </a>
+      <a class="card" href="/articles/data/">
+        <h3>报表与数据可视化</h3>
+        <p>销售报表、库存分析、ECharts 图表与大数据量导出，让数据看得见。</p>
+        <span class="meta">1 篇文章</span>
+      </a>
+      <a class="card" href="/articles/tech/">
+        <h3>技术架构</h3>
+        <p>前端框架选型、状态管理、性能优化与整体架构设计的经验总结。</p>
+        <span class="meta">1 篇文章</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 最新文章 -->
+<section class="block">
+  <div class="wrap">
+    <h2 class="block-title">最新文章<small>全部内容见文章列表</small></h2>
+    <div class="grid">
+      <a class="card" href="/articles/web-form-print.html">
+        <h3>Web 端进销存表单设计与打印方案</h3>
+        <p>进销存单据表单的双栏布局、键盘流录入与浏览器打印套打的完整实现思路。</p>
+        <span class="meta">Web界面 · 2026-10-04</span>
+      </a>
+      <a class="card" href="/articles/pwa-offline.html">
+        <h3>进销存 PWA 离线应用实践</h3>
+        <p>用 Service Worker 和 IndexedDB 实现断网开单、联网同步的 PWA 进销存。</p>
+        <span class="meta">PWA应用 · 2026-10-04</span>
+      </a>
+      <a class="card" href="/articles/api-design.html">
+        <h3>进销存 Web 版 REST API 设计</h3>
+        <p>商品、订单、库存三类核心接口的 URL 设计、状态码约定与鉴权方案。</p>
+        <span class="meta">接口设计 · 2026-10-04</span>
+      </a>
+      <a class="card" href="/articles/docker-deploy.html">
+        <h3>进销存系统 Docker 部署指南</h3>
+        <p>前端静态资源与后端服务的一体化 Docker 部署、nginx 反代与 HTTPS 配置。</p>
+        <span class="meta">部署运维 · 2026-10-04</span>
+      </a>
+      <a class="card" href="/articles/report-echarts.html">
+        <h3>进销存报表与 ECharts 可视化实战</h3>
+        <p>销售趋势、库存周转、毛利分析三类报表的图表选型与大数据量渲染方案。</p>
+        <span class="meta">数据报表 · 2026-10-04</span>
+      </a>
+      <a class="card" href="/articles/tech-stack.html">
+        <h3>进销存 Web 版技术架构选型</h3>
+        <p>前端框架、构建工具、状态管理与服务端技术的选型对比与推荐组合。</p>
+        <span class="meta">技术架构 · 2026-10-04</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 站点特性 -->
+<section class="block">
+  <div class="wrap">
+    <h2 class="block-title">关于本站<small>为什么值得收藏</small></h2>
+    <div class="grid">
+      <div class="card">
+        <h3>内容成体系</h3>
+        <p>界面、PWA、接口、部署、报表、架构六大栏目，覆盖 Web 版进销存全链路。</p>
+      </div>
+      <div class="card">
+        <h3>秒开体验</h3>
+        <p>纯静态页面，无脚本无广告，加载快、省流量，移动端同样流畅。</p>
+      </div>
+      <div class="card">
+        <h3>全端适配</h3>
+        <p>电脑、平板、手机都能舒适阅读，随时随地查阅技术方案。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>JXC-W.com</h4>
+        <p>进销存 Web 版技术站：Web 界面、PWA、接口、部署、报表与架构的技术积累。</p>
+        <p>联系邮箱：<a href="mailto:webnic@qq.com">webnic@qq.com</a></p>
+      </div>
+      <div>
+        <h4>栏目导航</h4>
+        <ul>
+          <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+          <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+          <li><a href="/articles/api/">前后端接口</a></li>
+          <li><a href="/articles/deploy/">部署与运维</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>相关站点</h4>
+        <ul>
+          <li><a href="https://jxc.js.cn" rel="noopener">jxc.js.cn · 进销存技术</a></li>
+          <li><a href="https://psi.js.cn" rel="noopener">psi.js.cn · PSI 进销存</a></li>
+          <li><a href="https://ims.js.cn" rel="noopener">ims.js.cn · 信息管理</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© 2026 jxc-w.com · 进销存 Web 版技术站</p>
+  </div>
+</footer>
+
 </body>
 </html>

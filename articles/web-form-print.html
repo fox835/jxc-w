@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web 端进销存表单设计与打印方案 - jxc-w.com</title>
+<meta name="description" content="进销存 Web 版单据表单的设计要点：双栏布局组织商品明细、键盘流提升录入速度，以及浏览器打印套打与 PDF 导出的实现方案。">
+<link rel="canonical" href="https://jxc-w.com/articles/web-form-print.html">
+<meta property="og:title" content="Web 端进销存表单设计与打印方案 - jxc-w.com">
+<meta property="og:description" content="进销存 Web 版单据表单的设计要点：双栏布局组织商品明细、键盘流提升录入速度，以及浏览器打印套打与 PDF 导出的实现方案。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jxc-w.com/articles/web-form-print.html">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Web 端进销存表单设计与打印方案",
+  "description": "进销存 Web 版单据表单的设计要点：双栏布局组织商品明细、键盘流提升录入速度，以及浏览器打印套打与 PDF 导出的实现方案。",
+  "datePublished": "2026-10-04",
+  "dateModified": "2026-10-04",
+  "author": { "@type": "Organization", "name": "jxc-w.com" },
+  "mainEntityOfPage": "https://jxc-w.com/articles/web-form-print.html",
+  "inLanguage": "zh-CN"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://jxc-w.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Web 界面与交互", "item": "https://jxc-w.com/articles/web-ui/" },
+    { "@type": "ListItem", "position": 3, "name": "Web 端进销存表单设计与打印方案", "item": "https://jxc-w.com/articles/web-form-print.html" }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="/">JXC-W<span>.com</span></a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-burger" aria-label="打开菜单"><span></span></label>
+    <nav class="site-nav">
+      <a href="/">首页</a>
+      <a href="/articles/">全部文章</a>
+      <a href="/articles/web-ui/">Web界面</a>
+      <a href="/articles/pwa/">PWA应用</a>
+      <a href="/articles/api/">接口设计</a>
+      <a href="/articles/deploy/">部署运维</a>
+      <a href="/articles/data/">数据报表</a>
+      <a href="/articles/tech/">技术架构</a>
+      <a href="/about.html">关于</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="breadcrumb" aria-label="面包屑">
+  <ol>
+    <li><a href="/">首页</a></li>
+    <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+    <li>Web 端进销存表单设计与打印方案</li>
+  </ol>
+</nav>
+</div>
+
+<div class="wrap layout">
+<aside class="sidebar">
+  <h3>栏目</h3>
+  <ul>
+    <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+    <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+    <li><a href="/articles/api/">前后端接口</a></li>
+    <li><a href="/articles/deploy/">部署与运维</a></li>
+    <li><a href="/articles/data/">报表与数据可视化</a></li>
+    <li><a href="/articles/tech/">技术架构</a></li>
+    <li><a href="/articles/">全部文章</a></li>
+  </ul>
+  <h3>热门文章</h3>
+  <ul>
+    <li><a href="/articles/web-form-print.html">Web 端进销存表单设计与打印方案</a></li>
+    <li><a href="/articles/api-design.html">进销存 Web 版 REST API 设计</a></li>
+    <li><a href="/articles/docker-deploy.html">进销存系统 Docker 部署指南</a></li>
+  </ul>
+  <h3>关于本站</h3>
+  <ul>
+    <li><a href="/about.html">站点介绍</a></li>
+  </ul>
+</aside>
+
+<main class="content">
+  <article class="article">
+    <h1>Web 端进销存表单设计与打印方案</h1>
+    <p class="article-meta">发布时间：2026-10-04 | 分类：Web 界面与交互</p>
+
+    <p>单据录入是进销存系统中使用频率最高的操作，销售单、采购单、调拨单每天可能要开几十上百张。Web 版进销存要想让老会计和仓管员愿意用，表单体验和打印输出是两大命门。本文总结我们在 Web 端做进销存表单设计与打印套打的完整方案。</p>
+
+    <h2>一、表单布局：上表头、下明细的经典结构</h2>
+    <p>进销存单据表单沿用桌面软件的经典结构：上半部分是表头信息，下半部分是商品明细表格。表头包含往来单位、单据日期、经手人、仓库、备注等字段；明细表格包含商品编码、名称、规格、单位、数量、单价、金额等列。</p>
+    <p>在宽屏上建议采用双栏布局：表头字段分两列排布，缩短纵向滚动距离；明细表格占满整行宽度。窄屏（平板竖屏、手机）下退化为单栏，表头字段纵向排列，明细表格横向滚动。用 CSS Grid 的 <code>grid-template-columns: repeat(auto-fit, minmax(260px, 1fr))</code> 可以一套代码自适应两种布局。</p>
+
+    <h2>二、明细表格：可编辑网格的实现要点</h2>
+    <p>明细表格是表单的核心，每一行都是可编辑的。三个要点：</p>
+    <ul>
+      <li><strong>行内编辑，不要弹窗</strong>。数量、单价直接在单元格里改，弹窗编辑会把一次开单变成几十次点击。</li>
+      <li><strong>自动增行</strong>。在最后一行输入商品后自动追加一个空行，用户始终有地方继续录。删除空行留给保存前的校验或显式删除按钮。</li>
+      <li><strong>金额实时计算</strong>。数量乘单价变化时，行金额、合计金额、优惠、应收应付联动更新。计算逻辑用纯函数实现（输入明细数组输出合计对象），方便单元测试。</li>
+    </ul>
+
+    <h2>三、键盘流：老用户的速度来源</h2>
+    <p>熟练录单员几乎不碰鼠标，全靠键盘完成一张单。必须支持的键盘操作：</p>
+    <ol>
+      <li><strong>回车跳格</strong>：明细行内按回车聚焦下一列，行尾回车跳到下一行的商品列。</li>
+      <li><strong>商品检索框</strong>：商品列输入编码或拼音首字母，弹出匹配列表，上下方向键选择、回车确认填入整行。</li>
+      <li><strong>全局快捷键</strong>：<code>Ctrl + S</code> 保存、<code>Ctrl + P</code> 打印、<code>Esc</code> 关闭弹层。</li>
+    </ol>
+    <p>实现上用 <code>keydown</code> 事件统一捕获，按当前焦点元素的 <code>data-field</code> 属性决定下一个焦点。注意不要用 <code>tabindex</code> 硬编码顺序，表格增删行后顺序会乱。</p>
+
+    <h2>四、打印套打：让浏览器打出单据的样子</h2>
+    <p>打印是进销存逃不掉的需求。三种方案按推荐程度排序：</p>
+    <table>
+      <tr>
+        <th>方案</th>
+        <th>优点</th>
+        <th>缺点</th>
+        <th>适用场景</th>
+      </tr>
+      <tr>
+        <td>浏览器打印 + @media print</td>
+        <td>零依赖，样式完全可控</td>
+        <td>格式受浏览器打印对话框影响</td>
+        <td>常规单据、A4 报表</td>
+      </tr>
+      <tr>
+        <td>服务端生成 PDF</td>
+        <td>格式 100% 固定，可存档发邮件</td>
+        <td>需要服务端组件，迭代慢</td>
+        <td>发票式固定格式、电子回单</td>
+      </tr>
+      <tr>
+        <td>LODOP 等打印插件</td>
+        <td>支持针式打印机套打、自定义纸张</td>
+        <td>需要安装插件，兼容性差</td>
+        <td>存量针打设备、连续纸</td>
+      </tr>
+    </table>
+    <p>我们的做法是：单据页面本身做好 <code>@media print</code> 样式——隐藏导航和按钮、重置背景色、用 <code>@page</code> 设置纸张边距，打印时直接 <code>window.print()</code>。打印样式和屏幕样式写在同一份 CSS 里，维护成本低。需要严格固定格式或归档的报表走服务端 PDF。</p>
+
+    <h2>五、保存与校验</h2>
+    <p>保存前的校验顺序影响体验：先做行内即时校验（数量为 0、单价缺失在输入时就标红），点保存时再做整体校验（往来单位必填、明细不能为空、库存是否充足），校验失败时把焦点定位到第一个错误字段。</p>
+    <p>保存按钮要防重复提交：点击后立即禁用并显示"保存中…"，收到响应再恢复。网络失败给出明确提示并保留表单内容，绝不能让录了 20 行的单据因为一次断网清空。配合 PWA 的离线队列（见 <a href="/articles/pwa-offline.html">进销存 PWA 离线应用实践</a>）可以彻底解决断网问题。</p>
+
+    <h2>结语</h2>
+    <p>Web 端进销存表单设计的核心思路是：布局沿用用户熟悉的单据结构，交互向桌面软件的速度看齐，打印用浏览器原生能力兜底。表单体验做好了，推广 Web 版进销存就成功了一半。</p>
+
+    <nav class="article-nav">
+      <span></span>
+      <a href="/articles/pwa-offline.html">下一篇：进销存 PWA 离线应用实践 →</a>
+    </nav>
+  </article>
+</main>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>JXC-W.com</h4>
+        <p>进销存 Web 版技术站：Web 界面、PWA、接口、部署、报表与架构的技术积累。</p>
+        <p>联系邮箱：<a href="mailto:webnic@qq.com">webnic@qq.com</a></p>
+      </div>
+      <div>
+        <h4>栏目导航</h4>
+        <ul>
+          <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+          <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+          <li><a href="/articles/api/">前后端接口</a></li>
+          <li><a href="/articles/deploy/">部署与运维</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>相关站点</h4>
+        <ul>
+          <li><a href="https://jxc.js.cn" rel="noopener">jxc.js.cn · 进销存技术</a></li>
+          <li><a href="https://psi.js.cn" rel="noopener">psi.js.cn · PSI 进销存</a></li>
+          <li><a href="https://ims.js.cn" rel="noopener">ims.js.cn · 信息管理</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© 2026 jxc-w.com · 进销存 Web 版技术站</p>
+  </div>
+</footer>
+
+</body>
+</html>

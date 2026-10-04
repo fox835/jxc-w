@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>进销存 Web 版 REST API 设计 - jxc-w.com</title>
+<meta name="description" content="进销存 Web 版 REST API 设计规范：商品、订单、库存三类核心接口的 URL 约定、统一响应格式、Token 鉴权与幂等提交方案。">
+<link rel="canonical" href="https://jxc-w.com/articles/api-design.html">
+<meta property="og:title" content="进销存 Web 版 REST API 设计 - jxc-w.com">
+<meta property="og:description" content="进销存 Web 版 REST API 设计规范：商品、订单、库存三类核心接口的 URL 约定、统一响应格式、Token 鉴权与幂等提交方案。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jxc-w.com/articles/api-design.html">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "进销存 Web 版 REST API 设计",
+  "description": "进销存 Web 版 REST API 设计规范：商品、订单、库存三类核心接口的 URL 约定、统一响应格式、Token 鉴权与幂等提交方案。",
+  "datePublished": "2026-10-04",
+  "dateModified": "2026-10-04",
+  "author": { "@type": "Organization", "name": "jxc-w.com" },
+  "mainEntityOfPage": "https://jxc-w.com/articles/api-design.html",
+  "inLanguage": "zh-CN"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://jxc-w.com/" },
+    { "@type": "ListItem", "position": 2, "name": "前后端接口", "item": "https://jxc-w.com/articles/api/" },
+    { "@type": "ListItem", "position": 3, "name": "进销存 Web 版 REST API 设计", "item": "https://jxc-w.com/articles/api-design.html" }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="/">JXC-W<span>.com</span></a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-burger" aria-label="打开菜单"><span></span></label>
+    <nav class="site-nav">
+      <a href="/">首页</a>
+      <a href="/articles/">全部文章</a>
+      <a href="/articles/web-ui/">Web界面</a>
+      <a href="/articles/pwa/">PWA应用</a>
+      <a href="/articles/api/">接口设计</a>
+      <a href="/articles/deploy/">部署运维</a>
+      <a href="/articles/data/">数据报表</a>
+      <a href="/articles/tech/">技术架构</a>
+      <a href="/about.html">关于</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="breadcrumb" aria-label="面包屑">
+  <ol>
+    <li><a href="/">首页</a></li>
+    <li><a href="/articles/api/">前后端接口</a></li>
+    <li>进销存 Web 版 REST API 设计</li>
+  </ol>
+</nav>
+</div>
+
+<div class="wrap layout">
+<aside class="sidebar">
+  <h3>栏目</h3>
+  <ul>
+    <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+    <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+    <li><a href="/articles/api/">前后端接口</a></li>
+    <li><a href="/articles/deploy/">部署与运维</a></li>
+    <li><a href="/articles/data/">报表与数据可视化</a></li>
+    <li><a href="/articles/tech/">技术架构</a></li>
+    <li><a href="/articles/">全部文章</a></li>
+  </ul>
+  <h3>热门文章</h3>
+  <ul>
+    <li><a href="/articles/web-form-print.html">Web 端进销存表单设计与打印方案</a></li>
+    <li><a href="/articles/api-design.html">进销存 Web 版 REST API 设计</a></li>
+    <li><a href="/articles/docker-deploy.html">进销存系统 Docker 部署指南</a></li>
+  </ul>
+  <h3>关于本站</h3>
+  <ul>
+    <li><a href="/about.html">站点介绍</a></li>
+  </ul>
+</aside>
+
+<main class="content">
+  <article class="article">
+    <h1>进销存 Web 版 REST API 设计</h1>
+    <p class="article-meta">发布时间：2026-10-04 | 分类：前后端接口</p>
+
+    <p>接口是前后端协作的契约，也是将来开放给第三方系统对接的门面。进销存业务单据多、状态流转复杂、对账要求严，接口设计一旦草率，后期对接和排错成本极高。本文梳理我们 Web 版进销存 API 的设计约定，涵盖 URL 规范、响应格式、鉴权和幂等四个核心问题。</p>
+
+    <h2>一、URL 设计：资源名词 + 业务动作显式化</h2>
+    <p>REST 的基本原则是用名词表示资源，用 HTTP 方法表示操作。进销存的核心资源是商品（goods）、单据（orders）、库存（stock）。基础 CRUD 很直接：</p>
+    <pre><code>GET    /api/v1/goods          # 商品列表（分页）
+GET    /api/v1/goods/123       # 商品详情
+POST   /api/v1/goods           # 新建商品
+PUT    /api/v1/goods/123       # 更新商品
+DELETE /api/v1/goods/123       # 停用商品（软删除）</code></pre>
+    <p>但进销存有大量业务动作：审核、反审核、出库确认、盘点差异处理。这类动作如果硬塞进 PUT 语义不清，我们的约定是显式子资源：</p>
+    <pre><code>POST   /api/v1/orders/456/review      # 审核
+POST   /api/v1/orders/456/unreview    # 反审核
+POST   /api/v1/stock/count            # 盘点录入
+POST   /api/v1/stock/adjust           # 库存调整</code></pre>
+    <p>版本号放在路径第一段（<code>/api/v1/</code>），不破坏式升级时升版本、旧版保留一个过渡期，给对接方留迁移时间。</p>
+
+    <h2>二、统一响应格式</h2>
+    <p>所有接口返回统一的信封结构，前端处理逻辑可以收敛到一个请求封装里：</p>
+    <pre><code>{
+  "code": 0,                 // 0 成功，非 0 业务错误码
+  "message": "ok",
+  "data": { ... },
+  "traceId": "a1b2c3"        // 排查问题时全链路定位
+}</code></pre>
+    <p>列表接口统一分页参数 <code>page</code> 和 <code>pageSize</code>（上限 200），返回 <code>data.list</code> + <code>data.total</code>。错误码分层：1xxxx 参数错误、2xxxx 业务规则拒绝（如库存不足）、3xxxx 权限问题、5xxxx 系统异常。业务错误必须把"为什么拒绝"说清楚——"库存不足，当前可用 15，需出库 20"远比"操作失败"有用。</p>
+
+    <h2>三、鉴权：Token + 签名</h2>
+    <p>登录后签发 Access Token（有效期 2 小时）+ Refresh Token（7 天），前端 401 时静默刷新重试原请求，用户无感。接口签名按这个顺序：请求头带 <code>Authorization: Bearer &lt;token&gt;</code>，敏感写操作再加时间戳 + 请求体摘要签名，防止抓包重放。</p>
+    <p>权限粒度到按钮级：后端每个接口校验权限点（如 <code>order:create</code>），不能只靠前端隐藏按钮。数据权限同样在后端落实——业务员只能看到自己客户的单据，这条校验写在查询构造层，所有列表接口自动生效。</p>
+
+    <h2>四、幂等：写接口的底线</h2>
+    <p>网络重试、用户连点、PWA 离线同步，都会让同一个写请求到达多次。写接口幂等是进销存 API 的底线要求，做法：</p>
+    <ul>
+      <li>新建单据：客户端生成 UUID 作为 <code>Idempotency-Key</code> 请求头，服务端按此键唯一约束，重复提交直接返回首次结果。</li>
+      <li>审核动作：服务端校验当前状态，已审核的单据重复审核返回幂等成功而非报错。</li>
+      <li>金额变动：所有收付款、成本变动用流水表记账，天然可重算可对账，不直接改余额字段。</li>
+    </ul>
+    <p>幂等键与离线队列的配合详见 <a href="/articles/pwa-offline.html">PWA 离线应用实践</a>——离线开单同步全靠它防重。</p>
+
+    <h2>五、文档与调试</h2>
+    <p>接口文档用 OpenAPI 3 描述，注解方式从代码生成（Spring 用 springdoc，Node 用 zod-to-openapi），保证文档和实现永不脱节。生成的文档站部署在内网，前端和后端对着同一份契约开发，联调成本能降一半。</p>
+
+    <h2>结语</h2>
+    <p>好的 API 设计标准只有一句话：<strong>让调用者一次猜对、出错能懂、重试安全</strong>。URL 显式化、响应信封统一、写操作幂等，这三件事做好了，进销存的接口就不会成为系统演进的负担。</p>
+
+    <nav class="article-nav">
+      <a href="/articles/pwa-offline.html">← 上一篇：进销存 PWA 离线应用实践</a>
+      <a href="/articles/docker-deploy.html">下一篇：进销存系统 Docker 部署指南 →</a>
+    </nav>
+  </article>
+</main>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>JXC-W.com</h4>
+        <p>进销存 Web 版技术站：Web 界面、PWA、接口、部署、报表与架构的技术积累。</p>
+        <p>联系邮箱：<a href="mailto:webnic@qq.com">webnic@qq.com</a></p>
+      </div>
+      <div>
+        <h4>栏目导航</h4>
+        <ul>
+          <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+          <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+          <li><a href="/articles/api/">前后端接口</a></li>
+          <li><a href="/articles/deploy/">部署与运维</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>相关站点</h4>
+        <ul>
+          <li><a href="https://jxc.js.cn" rel="noopener">jxc.js.cn · 进销存技术</a></li>
+          <li><a href="https://psi.js.cn" rel="noopener">psi.js.cn · PSI 进销存</a></li>
+          <li><a href="https://ims.js.cn" rel="noopener">ims.js.cn · 信息管理</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© 2026 jxc-w.com · 进销存 Web 版技术站</p>
+  </div>
+</footer>
+
+</body>
+</html>

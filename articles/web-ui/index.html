@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web 界面与交互 - jxc-w.com</title>
+<meta name="description" content="进销存 Web 版界面与交互设计：单据表单布局、复杂表格、键盘流录入与浏览器打印套打的实践经验。">
+<link rel="canonical" href="https://jxc-w.com/articles/web-ui/">
+<meta property="og:title" content="Web 界面与交互 - jxc-w.com">
+<meta property="og:description" content="进销存 Web 版界面与交互设计：单据表单布局、复杂表格、键盘流录入与浏览器打印套打的实践经验。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jxc-w.com/articles/web-ui/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://jxc-w.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Web 界面与交互", "item": "https://jxc-w.com/articles/web-ui/" }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="/">JXC-W<span>.com</span></a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-burger" aria-label="打开菜单"><span></span></label>
+    <nav class="site-nav">
+      <a href="/">首页</a>
+      <a href="/articles/">全部文章</a>
+      <a href="/articles/web-ui/">Web界面</a>
+      <a href="/articles/pwa/">PWA应用</a>
+      <a href="/articles/api/">接口设计</a>
+      <a href="/articles/deploy/">部署运维</a>
+      <a href="/articles/data/">数据报表</a>
+      <a href="/articles/tech/">技术架构</a>
+      <a href="/about.html">关于</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="breadcrumb" aria-label="面包屑">
+  <ol>
+    <li><a href="/">首页</a></li>
+    <li>Web 界面与交互</li>
+  </ol>
+</nav>
+</div>
+
+<div class="wrap layout">
+<aside class="sidebar">
+  <h3>栏目</h3>
+  <ul>
+    <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+    <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+    <li><a href="/articles/api/">前后端接口</a></li>
+    <li><a href="/articles/deploy/">部署与运维</a></li>
+    <li><a href="/articles/data/">报表与数据可视化</a></li>
+    <li><a href="/articles/tech/">技术架构</a></li>
+    <li><a href="/articles/">全部文章</a></li>
+  </ul>
+  <h3>热门文章</h3>
+  <ul>
+    <li><a href="/articles/web-form-print.html">Web 端进销存表单设计与打印方案</a></li>
+    <li><a href="/articles/api-design.html">进销存 Web 版 REST API 设计</a></li>
+    <li><a href="/articles/docker-deploy.html">进销存系统 Docker 部署指南</a></li>
+  </ul>
+  <h3>关于本站</h3>
+  <ul>
+    <li><a href="/about.html">站点介绍</a></li>
+  </ul>
+</aside>
+
+<main class="content">
+  <div class="list-head">
+    <h1>Web 界面与交互</h1>
+    <p>共 1 篇 · 表单、表格、打印与键盘流，让浏览器里的进销存好用</p>
+  </div>
+
+  <div class="page-group" id="page-1">
+    <a class="card" href="/articles/web-form-print.html">
+      <h3>Web 端进销存表单设计与打印方案</h3>
+      <p>进销存单据表单的双栏布局、键盘流录入与浏览器打印套打的完整实现思路。</p>
+      <span class="meta">Web界面 · 2026-10-04</span>
+    </a>
+  </div>
+
+  <nav class="pager" aria-label="分页">
+    <span class="current">1</span>
+  </nav>
+</main>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>JXC-W.com</h4>
+        <p>进销存 Web 版技术站：Web 界面、PWA、接口、部署、报表与架构的技术积累。</p>
+        <p>联系邮箱：<a href="mailto:webnic@qq.com">webnic@qq.com</a></p>
+      </div>
+      <div>
+        <h4>栏目导航</h4>
+        <ul>
+          <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+          <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+          <li><a href="/articles/api/">前后端接口</a></li>
+          <li><a href="/articles/deploy/">部署与运维</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>相关站点</h4>
+        <ul>
+          <li><a href="https://jxc.js.cn" rel="noopener">jxc.js.cn · 进销存技术</a></li>
+          <li><a href="https://psi.js.cn" rel="noopener">psi.js.cn · PSI 进销存</a></li>
+          <li><a href="https://ims.js.cn" rel="noopener">ims.js.cn · 信息管理</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© 2026 jxc-w.com · 进销存 Web 版技术站</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>进销存报表与 ECharts 可视化实战 - jxc-w.com</title>
+<meta name="description" content="进销存报表可视化实战：销售趋势、库存周转、毛利分析三类核心报表的图表选型、ECharts 大数据量渲染优化与导出方案。">
+<link rel="canonical" href="https://jxc-w.com/articles/report-echarts.html">
+<meta property="og:title" content="进销存报表与 ECharts 可视化实战 - jxc-w.com">
+<meta property="og:description" content="进销存报表可视化实战：销售趋势、库存周转、毛利分析三类核心报表的图表选型、ECharts 大数据量渲染优化与导出方案。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jxc-w.com/articles/report-echarts.html">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "进销存报表与 ECharts 可视化实战",
+  "description": "进销存报表可视化实战：销售趋势、库存周转、毛利分析三类核心报表的图表选型、ECharts 大数据量渲染优化与导出方案。",
+  "datePublished": "2026-10-04",
+  "dateModified": "2026-10-04",
+  "author": { "@type": "Organization", "name": "jxc-w.com" },
+  "mainEntityOfPage": "https://jxc-w.com/articles/report-echarts.html",
+  "inLanguage": "zh-CN"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://jxc-w.com/" },
+    { "@type": "ListItem", "position": 2, "name": "报表与数据可视化", "item": "https://jxc-w.com/articles/data/" },
+    { "@type": "ListItem", "position": 3, "name": "进销存报表与 ECharts 可视化实战", "item": "https://jxc-w.com/articles/report-echarts.html" }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="/">JXC-W<span>.com</span></a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-burger" aria-label="打开菜单"><span></span></label>
+    <nav class="site-nav">
+      <a href="/">首页</a>
+      <a href="/articles/">全部文章</a>
+      <a href="/articles/web-ui/">Web界面</a>
+      <a href="/articles/pwa/">PWA应用</a>
+      <a href="/articles/api/">接口设计</a>
+      <a href="/articles/deploy/">部署运维</a>
+      <a href="/articles/data/">数据报表</a>
+      <a href="/articles/tech/">技术架构</a>
+      <a href="/about.html">关于</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="breadcrumb" aria-label="面包屑">
+  <ol>
+    <li><a href="/">首页</a></li>
+    <li><a href="/articles/data/">报表与数据可视化</a></li>
+    <li>进销存报表与 ECharts 可视化实战</li>
+  </ol>
+</nav>
+</div>
+
+<div class="wrap layout">
+<aside class="sidebar">
+  <h3>栏目</h3>
+  <ul>
+    <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+    <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+    <li><a href="/articles/api/">前后端接口</a></li>
+    <li><a href="/articles/deploy/">部署与运维</a></li>
+    <li><a href="/articles/data/">报表与数据可视化</a></li>
+    <li><a href="/articles/tech/">技术架构</a></li>
+    <li><a href="/articles/">全部文章</a></li>
+  </ul>
+  <h3>热门文章</h3>
+  <ul>
+    <li><a href="/articles/web-form-print.html">Web 端进销存表单设计与打印方案</a></li>
+    <li><a href="/articles/api-design.html">进销存 Web 版 REST API 设计</a></li>
+    <li><a href="/articles/docker-deploy.html">进销存系统 Docker 部署指南</a></li>
+  </ul>
+  <h3>关于本站</h3>
+  <ul>
+    <li><a href="/about.html">站点介绍</a></li>
+  </ul>
+</aside>
+
+<main class="content">
+  <article class="article">
+    <h1>进销存报表与 ECharts 可视化实战</h1>
+    <p class="article-meta">发布时间：2026-10-04 | 分类：报表与数据可视化</p>
+
+    <p>"这个月卖得怎么样？哪些商品压货了？哪个客户最赚钱？"老板每天问的都是这三个问题。报表是进销存系统价值的最终呈现，而图表比数字表格更能让人一眼看懂趋势。本文以我们 Web 版进销存的三类核心报表为例，讲清图表选型和 ECharts 落地的关键决策。</p>
+
+    <h2>一、三类核心报表与图表选型</h2>
+    <table>
+      <tr>
+        <th>报表</th>
+        <th>回答的问题</th>
+        <th>推荐图表</th>
+        <th>选型理由</th>
+      </tr>
+      <tr>
+        <td>销售趋势</td>
+        <td>业绩随时间怎么变</td>
+        <td>折线图</td>
+        <td>趋势用线，多系列（销售额/毛利额）双 Y 轴对比</td>
+      </tr>
+      <tr>
+        <td>库存周转</td>
+        <td>哪些商品占钱最多、转得最慢</td>
+        <td>条形图 + 散点</td>
+        <td>品类对比用条，"库存金额 × 周转天数"用散点找呆滞品</td>
+      </tr>
+      <tr>
+        <td>毛利分析</td>
+        <td>哪个客户/品类贡献利润</td>
+        <td>帕累托图</td>
+        <td>柱显示毛利额，线显示累计占比，二八分布一目了然</td>
+      </tr>
+    </table>
+    <p>选型原则：<strong>趋势用线、对比用柱、占比用环、分布用点</strong>。进销存报表几乎不需要饼图之外的炫技图表，克制本身就是专业。</p>
+
+    <h2>二、查询性能：报表慢的根子在数据层</h2>
+    <p>单据量过百万后，报表慢通常不是 ECharts 的锅，而是 SQL 的锅。三个优化动作按收益排序：</p>
+    <ol>
+      <li><strong>预聚合表</strong>：建一张日报汇总表（日期 × 商品 × 仓库 × 数量 × 金额），单据审核时同步写汇总，报表只查汇总表，查询量从百万行降到万行级。</li>
+      <li><strong>合理的复合索引</strong>：按最常见的查询条件建索引，如 <code>(warehouse_id, biz_date)</code>，用 <code>EXPLAIN</code> 验证走了索引。</li>
+      <li><strong>分页与采样</strong>：明细报表必须分页；趋势图超过 366 个点按周/月聚合，300 个点和 3000 个点肉眼没有区别。</li>
+    </ol>
+    <p>预聚合表的设计要和单据状态流转联动：审核写正向数、反审核写冲减，保证汇总表永远等于明细之和。每天跑一次对账任务校验两者一致，发现漂移立即报警。</p>
+
+    <h2>三、ECharts 大数据量渲染优化</h2>
+    <p>即使数据层优化完，年度明细趋势仍可能有上万点。ECharts 端四条经验：</p>
+    <ul>
+      <li><strong>关掉不必要的动画</strong>：<code>animation: false</code>，数据量大时动画是卡顿首因。</li>
+      <li><strong>开启增量渲染</strong>：<code>lazyUpdate: true</code> + <code>notMerge: true</code>，配合 <code>setOption</code> 按需更新。</li>
+      <li><strong>大数据用采样</strong>：ECharts 自带 <code>sampling: 'lttb'</code>（最大三角保持采样），万级点降到千级而保留形状特征，开启后渲染时间降一个数量级。</li>
+      <li><strong>视口外不渲染</strong>：Tab 页隐藏的图表先不初始化，切换时再 <code>init</code>，避免一次渲染五六张图。</li>
+    </ul>
+
+    <h2>四、交互设计：筛选器比图表本身更重要</h2>
+    <p>报表页的标准配置：顶部一排筛选器（时间范围、仓库、品类、客户），图表随筛选联动。两个细节：</p>
+    <ul>
+      <li><strong>默认值即答案</strong>：默认展示"本月 · 全部仓库"，老板打开页面第一眼就是他要的数字，不让用户先点四下筛选。</li>
+      <li><strong>下钻路径</strong>：点趋势图的某一天，跳到该日明细表；点品类条形，跳到该品类商品排行。图表是入口，表格是终点。</li>
+    </ul>
+
+    <h2>五、导出：打印与 Excel 双通道</h2>
+    <p>报表必须能带走。两种导出：屏幕上的图表用 <a href="/articles/web-form-print.html">打印样式</a> 直接输出 PDF；数据本身走服务端生成 Excel（数据超过 5 万行不要用前端导出库，浏览器内存扛不住）。导出的 Excel 带筛选条件页签，财务对账时知道这份数据是什么口径。</p>
+
+    <h2>结语</h2>
+    <p>进销存报表的完整链路是：单据状态驱动预聚合 → 聚合表支撑快速查询 → ECharts 克制选型 → 筛选交互直达答案 → 导出带走归档。每一步都不复杂，但环环相接才能撑起"秒开"的报表体验。</p>
+
+    <nav class="article-nav">
+      <a href="/articles/docker-deploy.html">← 上一篇：进销存系统 Docker 部署指南</a>
+      <a href="/articles/tech-stack.html">下一篇：进销存 Web 版技术架构选型 →</a>
+    </nav>
+  </article>
+</main>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>JXC-W.com</h4>
+        <p>进销存 Web 版技术站：Web 界面、PWA、接口、部署、报表与架构的技术积累。</p>
+        <p>联系邮箱：<a href="mailto:webnic@qq.com">webnic@qq.com</a></p>
+      </div>
+      <div>
+        <h4>栏目导航</h4>
+        <ul>
+          <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+          <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+          <li><a href="/articles/api/">前后端接口</a></li>
+          <li><a href="/articles/deploy/">部署与运维</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>相关站点</h4>
+        <ul>
+          <li><a href="https://jxc.js.cn" rel="noopener">jxc.js.cn · 进销存技术</a></li>
+          <li><a href="https://psi.js.cn" rel="noopener">psi.js.cn · PSI 进销存</a></li>
+          <li><a href="https://ims.js.cn" rel="noopener">ims.js.cn · 信息管理</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© 2026 jxc-w.com · 进销存 Web 版技术站</p>
+  </div>
+</footer>
+
+</body>
+</html>

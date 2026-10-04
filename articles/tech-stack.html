@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>进销存 Web 版技术架构选型 - jxc-w.com</title>
+<meta name="description" content="进销存 Web 版技术选型：Vue3 前端框架、Vite 构建、Pinia 状态管理、后端 Spring Boot 与数据库方案的对比分析和推荐组合。">
+<link rel="canonical" href="https://jxc-w.com/articles/tech-stack.html">
+<meta property="og:title" content="进销存 Web 版技术架构选型 - jxc-w.com">
+<meta property="og:description" content="进销存 Web 版技术选型：Vue3 前端框架、Vite 构建、Pinia 状态管理、后端 Spring Boot 与数据库方案的对比分析和推荐组合。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jxc-w.com/articles/tech-stack.html">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "进销存 Web 版技术架构选型",
+  "description": "进销存 Web 版技术选型：Vue3 前端框架、Vite 构建、Pinia 状态管理、后端 Spring Boot 与数据库方案的对比分析和推荐组合。",
+  "datePublished": "2026-10-04",
+  "dateModified": "2026-10-04",
+  "author": { "@type": "Organization", "name": "jxc-w.com" },
+  "mainEntityOfPage": "https://jxc-w.com/articles/tech-stack.html",
+  "inLanguage": "zh-CN"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://jxc-w.com/" },
+    { "@type": "ListItem", "position": 2, "name": "技术架构", "item": "https://jxc-w.com/articles/tech/" },
+    { "@type": "ListItem", "position": 3, "name": "进销存 Web 版技术架构选型", "item": "https://jxc-w.com/articles/tech-stack.html" }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="/">JXC-W<span>.com</span></a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-burger" aria-label="打开菜单"><span></span></label>
+    <nav class="site-nav">
+      <a href="/">首页</a>
+      <a href="/articles/">全部文章</a>
+      <a href="/articles/web-ui/">Web界面</a>
+      <a href="/articles/pwa/">PWA应用</a>
+      <a href="/articles/api/">接口设计</a>
+      <a href="/articles/deploy/">部署运维</a>
+      <a href="/articles/data/">数据报表</a>
+      <a href="/articles/tech/">技术架构</a>
+      <a href="/about.html">关于</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="breadcrumb" aria-label="面包屑">
+  <ol>
+    <li><a href="/">首页</a></li>
+    <li><a href="/articles/tech/">技术架构</a></li>
+    <li>进销存 Web 版技术架构选型</li>
+  </ol>
+</nav>
+</div>
+
+<div class="wrap layout">
+<aside class="sidebar">
+  <h3>栏目</h3>
+  <ul>
+    <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+    <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+    <li><a href="/articles/api/">前后端接口</a></li>
+    <li><a href="/articles/deploy/">部署与运维</a></li>
+    <li><a href="/articles/data/">报表与数据可视化</a></li>
+    <li><a href="/articles/tech/">技术架构</a></li>
+    <li><a href="/articles/">全部文章</a></li>
+  </ul>
+  <h3>热门文章</h3>
+  <ul>
+    <li><a href="/articles/web-form-print.html">Web 端进销存表单设计与打印方案</a></li>
+    <li><a href="/articles/api-design.html">进销存 Web 版 REST API 设计</a></li>
+    <li><a href="/articles/docker-deploy.html">进销存系统 Docker 部署指南</a></li>
+  </ul>
+  <h3>关于本站</h3>
+  <ul>
+    <li><a href="/about.html">站点介绍</a></li>
+  </ul>
+</aside>
+
+<main class="content">
+  <article class="article">
+    <h1>进销存 Web 版技术架构选型</h1>
+    <p class="article-meta">发布时间：2026-10-04 | 分类：技术架构</p>
+
+    <p>技术选型没有银弹，但有明确的约束条件：进销存是重表单、重表格、重交互的业务系统，团队规模小、交付周期紧、需要长期维护。本文按这个约束，把每个技术决策的对比和结论讲清楚，供同类项目参考。</p>
+
+    <h2>一、整体架构：前后端分离 + 单体后端</h2>
+    <p>第一层决策是架构形态。我们的选择：前端 SPA + 后端单体应用，不做微服务。</p>
+    <ul>
+      <li><strong>前后端分离</strong>：前端专注交互，后端专注业务，接口契约用 OpenAPI 固定（见 <a href="/articles/api-design.html">REST API 设计</a>）。分离让前端能独立 <a href="/articles/docker-deploy.html">Docker 化部署</a>，也让将来做移动端复用同一套 API。</li>
+      <li><strong>单体后端</strong>：进销存业务模块间耦合紧密——订单影响库存、库存影响成本、成本影响报表，微服务的分布式事务成本远大于收益。单体 + 清晰的模块边界（按业务域分包），两三人的团队维护五年没有问题。真到单实例撑不住那天，按模块拆分也有清晰的刀口。</li>
+    </ul>
+
+    <h2>二、前端选型：Vue3 + Vite + TypeScript</h2>
+    <table>
+      <tr>
+        <th>候选</th>
+        <th>优势</th>
+        <th>劣势</th>
+        <th>结论</th>
+      </tr>
+      <tr>
+        <td>Vue3</td>
+        <td>国内人才多、中文资料全、模板语法上手快</td>
+        <td>大型工程生态弱于 React</td>
+        <td>选用</td>
+      </tr>
+      <tr>
+        <td>React</td>
+        <td>生态最大、企业级方案成熟</td>
+        <td>团队学习成本高，表单密集场景样板代码多</td>
+        <td>备选</td>
+      </tr>
+      <tr>
+        <td>传统多页 + jQuery</td>
+        <td>零构建、兼容老旧环境</td>
+        <td>复杂交互开发效率低，招不到愿意维护的人</td>
+        <td>放弃</td>
+      </tr>
+    </table>
+    <p>配套三件套：<strong>Vite</strong>（秒级热更新、生产构建快）、<strong>TypeScript</strong>（进销存单据字段几十个，类型安全能在重构时保命）、<strong>Pinia</strong>（比 Vuex 简单，组合式 API 风格）。UI 组件库选 Element Plus——表格组件是它最强项，而进销存页面一半以上是表格。</p>
+
+    <h2>三、后端选型：Spring Boot 或 NestJS</h2>
+    <p>两条路线都验证过可行性，按团队背景二选一：</p>
+    <ul>
+      <li><strong>Java + Spring Boot</strong>：进销存客户多为传统企业，客户侧运维对 Java 接受度最高；事务、并发、生态最成熟。适合有 Java 背景的团队。</li>
+      <li><strong>TypeScript + NestJS</strong>：和前端同语言，全栈 TypeScript 类型可共享；单体结构成熟。适合前端起家的团队。</li>
+    </ul>
+    <p>无论哪条，三个技术件不变：数据库迁移工具（结构演进靠它）、统一响应封装和幂等设计（见 API 篇）、以及预聚合报表机制（见 <a href="/articles/report-echarts.html">报表可视化</a>）。这些是进销存后端的价值核心，框架只是壳。</p>
+
+    <h2>四、数据库与缓存</h2>
+    <p><strong>MySQL 8</strong> 是默认答案：单机性能足够支撑年单量千万级的进销存，InnoDB 事务可靠，运维人才遍地。除非客户已有 PostgreSQL 运维体系，否则不为小众偏好增加交付风险。</p>
+    <p><strong>Redis 两个用途</strong>：一是会话与 Token 缓存，二是热点数据缓存（商品档案全表就几万条，进程内缓存 + Redis 各存一份，前端查询基本零延迟）。注意 Redis 不参与任何金额计算，账本只信数据库事务。</p>
+
+    <h2>五、PWA 与离线层的定位</h2>
+    <p>PWA 不是可选项，是 Web 版进销存替代本地软件的关键能力（详见 <a href="/articles/pwa-offline.html">PWA 离线实践</a>）。但离线层要控制复杂度：只缓存应用外壳和基础档案，单据同步走队列 + UUID 幂等，不做双向实时同步——那是另一个量级的工程。</p>
+
+    <h2>六、选型清单总结</h2>
+    <pre><code>前端：Vue3 + Vite + TypeScript + Pinia + Element Plus
+后端：Spring Boot（或 NestJS）+ MySQL 8 + Redis
+部署：Docker Compose（nginx + 后端 + 数据库）
+离线：Service Worker + IndexedDB（PWA）
+接口：OpenAPI 3 契约 + 统一响应信封 + 幂等键</code></pre>
+    <p>这套组合没有追新，每一项都在"团队能驾驭"和"生态够成熟"的交集里。选型的本质是在约束条件下做减法——能一个框架解决的，绝不引入第二个。</p>
+
+    <h2>结语</h2>
+    <p>技术架构选型的验证标准不是发布会上的 benchmark，而是三年后还能不能顺利招到人、顺利发新版、顺利给客户交付。围绕这个目标，本文的组合是稳妥答案；如果你的团队约束不同，决策方法比结论更重要。</p>
+
+    <nav class="article-nav">
+      <a href="/articles/report-echarts.html">← 上一篇：进销存报表与 ECharts 可视化实战</a>
+      <span></span>
+    </nav>
+  </article>
+</main>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>JXC-W.com</h4>
+        <p>进销存 Web 版技术站：Web 界面、PWA、接口、部署、报表与架构的技术积累。</p>
+        <p>联系邮箱：<a href="mailto:webnic@qq.com">webnic@qq.com</a></p>
+      </div>
+      <div>
+        <h4>栏目导航</h4>
+        <ul>
+          <li><a href="/articles/web-ui/">Web 界面与交互</a></li>
+          <li><a href="/articles/pwa/">PWA 与移动 Web</a></li>
+          <li><a href="/articles/api/">前后端接口</a></li>
+          <li><a href="/articles/deploy/">部署与运维</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>相关站点</h4>
+        <ul>
+          <li><a href="https://jxc.js.cn" rel="noopener">jxc.js.cn · 进销存技术</a></li>
+          <li><a href="https://psi.js.cn" rel="noopener">psi.js.cn · PSI 进销存</a></li>
+          <li><a href="https://ims.js.cn" rel="noopener">ims.js.cn · 信息管理</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© 2026 jxc-w.com · 进销存 Web 版技术站</p>
+  </div>
+</footer>
+
+</body>
+</html>
