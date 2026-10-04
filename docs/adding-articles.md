@@ -60,12 +60,18 @@
 
 在第 1 个 `page-group` 顶部插入同样卡片，更新"共 N 篇"计数。
 
-**分页规则**：第 1 页满 6 张卡片时，把最旧的一张挪到新的 `<div class="page-group" id="page-2">`，并在底部 `.pager` 区加页码链接：
+**分页规则**：所有 page-group 同时展示，页码只是锚点滚动导航（不用 CSS 隐藏分组）。第 1 页满 6 张卡片时，把最旧的一张（组内最后一个）挪到新的 `<div class="page-group" id="page-2">`，第 2 页也满则级联到 `#page-3`。**每个 page-group 后紧跟一个 `.pager`**，页码覆盖全部组；紧跟第 K 组时，第 K 页标当前、其余为锚点链接：
 
 ```html
+<div class="page-group" id="page-1">…6 张卡片…</div>
 <nav class="pager" aria-label="分页">
   <span class="current">1</span>
   <a href="#page-2">2</a>
+</nav>
+<div class="page-group" id="page-2">…卡片…</div>
+<nav class="pager" aria-label="分页">
+  <a href="#page-1">1</a>
+  <span class="current">2</span>
 </nav>
 ```
 

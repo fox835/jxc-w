@@ -10,6 +10,17 @@ description: 向 jxc-w.com 站点新增一篇文章：创建文章页并同步�
 
 如果标题或栏目缺失、栏目名不是上述六个之一，先向用户询问确认，不要自行猜测栏目归属。
 
+## 分页设计约定（执行前必读）
+
+本站列表页（栏目页与 `/articles/`）采用**锚点分页**，规则如下，务必严格遵守：
+
+1. 同一 HTML 内用多个 `<div class="page-group" id="page-N">` 分组（N 从 1 开始连续编号），页码链接用 `#page-N` 锚点
+2. **所有分组同时展示**，页码只是滚动导航；**不要**用 CSS `:target` 隐藏分组，保持与现有页面行为一致
+3. 每组最多 6 张卡片；新卡插组顶，插入后若组内有 7 张，把**该组最后一张**（即最旧）移入下一组
+4. 下一组不存在则新建，放在**前一组的 pager 之后**；若移入后下一组也变成 7 张，按同规则级联处理 #page-3、#page-4……
+5. **每个 page-group 紧跟一个 `.pager`**，页码覆盖当前页全部组：紧跟第 K 组时，第 K 页用 `<span class="current">K</span>`，其余页用 `<a href="#page-N">N</a>`
+6. 首页不分页，「最新文章」固定 6 张
+
 ## 执行步骤
 
 ### 第 1 步：生成文章元信息
@@ -32,13 +43,12 @@ description: 向 jxc-w.com 站点新增一篇文章：创建文章页并同步�
 
 - 在 `#page-1` 顶部插入标准卡片（h3 标题 + 一句话摘要 p + `栏目名 · 日期` meta）
 - 更新 `.list-head` 的"共 N 篇"计数（N+1）
-- 若栏目第 1 页因此满 6 张卡片，最旧卡片移入新的 `#page-2` 并在 `.pager` 补页码链接
+- 按「分页设计约定」第 3–5 条处理满组：数 `#page-1` 卡片数，为 7 张时将最后一张移入 `#page-2`（不存在则新建，位于 #page-1 的 pager 之后），级联检查后续组；确保每个 page-group 后紧跟一个页码完整的 `.pager`
 
 ### 第 4 步：更新全部文章列表 `/articles/index.html`
 
 - 第 1 个 page-group 顶部插入同样卡片，"共 N 篇"计数 +1
-- 若第 1 页满 6 张：最旧卡片移入 `#page-2`，`.pager` 补页码
-- 页码链接规则：第 1 页用 `<span class="current">1</span>`，其余页用 `<a href="#page-N">N</a>`
+- 满组处理规则与第 3 步完全相同
 
 ### 第 5 步：更新首页 `/index.html`
 
@@ -57,9 +67,9 @@ description: 向 jxc-w.com 站点新增一篇文章：创建文章页并同步�
 
 用 Node.js 校验（本环境 shell 变量展开异常，必须用 node -e 方式）：
 
-1. 新页面 title/description/canonical/h1 各恰好 1 个
+1. 新页面 title/description/canonical/h1 各恰好 1 个；JSON-LD 可被 JSON.parse 解析
 2. 全站站内链接 0 缺失（遍历所有 .html 提取 `href="/..."`，目录链接补 `index.html` 后检查文件存在）
-3. 新页面 JSON-LD 可被 JSON.parse 解析（提取 `<script type="application/ld+json">` 内容验证）
+3. 分页结构：每个含卡片的 page-group 后紧跟一个 `.pager`；每组卡片数 ≤ 6；组编号从 1 连续；pager 页码覆盖所有组且无多余页码
 
 ### 第 8 步：汇报
 
